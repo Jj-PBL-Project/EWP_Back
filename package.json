@@ -1,6 +1,6 @@
 {
   "name": "ewp_back",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "2024 Jj Univ's PBL Project / Team 3's Back git",
   "main": "index.js",
   "scripts": {
