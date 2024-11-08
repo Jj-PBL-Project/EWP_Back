@@ -1,0 +1,20 @@
+{
+  "name": "ewp_back",
+  "version": "1.0.0",
+  "description": "2024 Jj Univ's PBL Project / Team 3's Back git",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "성민우, 신창훈",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongoose": "^8.8.0"
+  },
+  "devDependencies": {
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
