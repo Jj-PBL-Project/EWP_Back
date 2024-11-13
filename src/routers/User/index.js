@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 /**
@@ -20,10 +20,14 @@ const router = express.Router();
  *                    ok:
  *                      type: boolean
  */
-router.post('/', (req, res) => {
-    res.status(200).json({
-        ok: true,
-    });
+router.post("/", (req, res) => {
+  res.status(200).json({
+    ok: true,
+  });
+});
+
+router.get("/", (req, res) => {
+  res.send("./routers/User/index.js 입니다.");
 });
 
 module.exports = router;
