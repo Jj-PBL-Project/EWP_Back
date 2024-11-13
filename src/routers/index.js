@@ -8,6 +8,6 @@ const user = require("./User");
  *   name: Users
  *   description: 유저 데이터 관리 라우터
  */
-router.use("/User", user);
+router.use("/user", user);
 
 module.exports = router;

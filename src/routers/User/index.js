@@ -21,7 +21,7 @@ const { signup } = require("../../controllers/signupController");
  *                    ok:
  *                      type: boolean
  */
-router.post("/", (req, res) => {
+router.get("/test", (req, res) => {
   res.status(200).json({
     ok: true,
   });
