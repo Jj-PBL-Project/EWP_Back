@@ -23,4 +23,5 @@ const diarySchema = new mongoose.Schema({
   },
 });
 
-export const Diary = mongoose.model("Diary", diarySchema);
+const Diary = mongoose.model("Diary", diarySchema);
+module.exports = Diary;

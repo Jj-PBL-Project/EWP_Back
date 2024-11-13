@@ -3,6 +3,7 @@ const app = express();
 const { swaggerUi, specs } = require("./swagger");
 const api = require("./routers");
 const mongoose = require("mongoose");
+const authRoutes = require("./routers/authRoutes");
 
 // DB 연결
 mongoose
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", api);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Page");
