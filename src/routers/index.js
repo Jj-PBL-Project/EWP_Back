@@ -10,8 +10,4 @@ const user = require("./User");
  */
 router.use("/User", user);
 
-router.get("/", (req, res) => {
-  res.send("./routers/index.js 입니다");
-});
-
 module.exports = router;

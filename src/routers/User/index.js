@@ -26,8 +26,4 @@ router.post("/", (req, res) => {
   });
 });
 
-router.get("/", (req, res) => {
-  res.send("./routers/User/index.js 입니다.");
-});
-
 module.exports = router;
