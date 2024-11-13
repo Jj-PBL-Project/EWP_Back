@@ -6,7 +6,7 @@ const signup = async (req, res) => {
   try {
     // 비밀번호 암호화
     const salt = await bcrypt.genSaltSync(10);
-    const hashPassword = await bcrypt.hashSync(req.body.userPassword, salt);
+    const hashPassword = await bcrypt.hashSync(userPassword, salt);
 
     // 유저 데이터 생성 및 저장
     const newUser = new User({
