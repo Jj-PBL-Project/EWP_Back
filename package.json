@@ -13,7 +13,8 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "express": "^4.21.1",
-    "mongoose": "^8.8.1"
+    "mongoose": "^8.8.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "swagger-jsdoc": "^6.2.8",

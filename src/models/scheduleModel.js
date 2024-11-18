@@ -5,6 +5,11 @@ scheduleTitle < 이렇게 풀명칭으로 할지
 scdTitle < 이렇게 줄임으로 할지
 */
 const scheduleSchema = new mongoose.Schema({
+  UUID: {
+    // 외래키
+    type: String,
+    required: true
+  },
   scdTitle: {
     // 제목
     type: String,

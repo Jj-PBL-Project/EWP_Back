@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  UUID: {
+    // 외래키
+    type: String,
+    required: true
+  },
   userName: {
     // 이름
     type: String,

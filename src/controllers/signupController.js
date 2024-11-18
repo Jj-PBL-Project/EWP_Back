@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt"); // 비밀번호 암호화
+const { v4 } = require("uuid");
 
 const signup = async (req, res) => {
   const { userName, userBirthday, userId, userPassword, userBio, userTag } = req.body;
@@ -15,7 +16,8 @@ const signup = async (req, res) => {
       userId,
       userPassword: hashPassword,
       userBio,
-      userTag
+      userTag,
+      UUID: v4()
     });
     await newUser.save();
     res.status(201).json({ message: "Sign Up Success" });

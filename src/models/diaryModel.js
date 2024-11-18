@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const diarySchema = new mongoose.Schema({
+  UUID: {
+    // 외래키
+    type: String,
+    required: true
+  },
   diaryTitle: {
     // 제목
     type: String,
