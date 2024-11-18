@@ -22,6 +22,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  userTag: {
+    // 태그
+    type: String,
+    required: true
+  },
+  userBio: {
+    // 상태메세지
+    type: String,
+    required: true
+  },
+  userProfileImgUrl: {
+    // 프로필 사진
+    type: String,
+    required: true
+  }
 });
 
 const User = mongoose.model("User", userSchema);

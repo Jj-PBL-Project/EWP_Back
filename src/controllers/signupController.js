@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const bcrypt = require("bcrypt"); // 비밀번호 암호화
 
 const signup = async (req, res) => {
-  const { userName, userBirthday, userId, userPassword } = req.body;
+  const { userName, userBirthday, userId, userPassword, userBio, userTag } = req.body;
   try {
     // 비밀번호 암호화
     const salt = await bcrypt.genSaltSync(10);
@@ -14,6 +14,8 @@ const signup = async (req, res) => {
       userBirthday,
       userId,
       userPassword: hashPassword,
+      userBio,
+      userTag
     });
     await newUser.save();
     res.status(201).json({ message: "Sign Up Success" });
