@@ -35,12 +35,12 @@ const userSchema = new mongoose.Schema({
   userBio: {
     // 상태메세지
     type: String,
-    required: true
+    required: false
   },
   userProfileImgUrl: {
     // 프로필 사진
     type: String,
-    required: true
+    required: false
   }
 });
 
