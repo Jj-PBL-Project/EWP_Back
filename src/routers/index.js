@@ -1,13 +1,15 @@
-const express = require("express");
-const router = express.Router();
-const user = require("./User");
+const router = require("express").Router();
 
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: 유저 데이터 관리 라우터
- */
-router.use("/user", user);
+const API = (io) => {
+    const user = require("./User")(io);
+    /**
+     * @swagger
+     * tags:
+     *   name: Users
+     *   description: 유저 데이터 관리 라우터
+     */
+    router.use("/user", user);
+    return router;
+}
 
-module.exports = router;
+module.exports = API;
