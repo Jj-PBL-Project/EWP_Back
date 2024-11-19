@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { signup } = require("../../controllers/signupController");
+const { login } = require("../../controllers/loginController");
 
 /**
  * @swagger
@@ -66,7 +67,7 @@ router.get("/test", (req, res) => {
  *                    message:
  *                      type: String
  *                      example: Sign Up Success
- *        "400": 
+ *        "400":
  *          description: 유저 계정 생성 실패
  *          content:
  *            application/json:
@@ -78,5 +79,60 @@ router.get("/test", (req, res) => {
  *                      example: Error Message
  */
 router.post("/signup", signup);
+
+/**
+ * @swagger
+ * paths:
+ *  /api/user/login:
+ *    post:
+ *      summary: "로그인"
+ *      description: "서버에 사용자 정보를 보내 계정을 로그인합니다"
+ *      tags: [Users]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                userId:
+ *                  type: string
+ *                  example: testId
+ *                userPassword:
+ *                  type: string
+ *                  example: admin1234
+ *      responses:
+ *        "200":
+ *          description: 유저 로그인 성공
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Login Success
+ *        "400":
+ *          description: 유저 로그인 실패
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Check userID or userPassword
+ *        "500":
+ *          description: 서버 오류
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Server Error
+ */
+router.post("/login", login);
 
 module.exports = router;
