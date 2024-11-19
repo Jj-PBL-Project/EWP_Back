@@ -17,9 +17,5 @@
     "mongoose": "^8.8.1",
     "socket.io": "^4.8.1",
     "uuid": "^11.0.3"
-  },
-  "devDependencies": {
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
   }
 }

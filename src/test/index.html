@@ -1,0 +1,111 @@
+<!-- chat.html -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Test Login</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .chat {
+            border: 1px solid black;
+            width: 400px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        .form-group button {
+            padding: 10px;
+            width: 100%;
+        }
+
+        #result {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>회원가입 및 로그인</h1>
+    <div class="form-group">
+        <h2>회원가입</h2>
+        <input id="signupId" type="text" placeholder="아이디" />
+        <input id="signupPw" type="password" placeholder="비밀번호" />
+        <input id="signupName" type="text" placeholder="이름" />
+        <input id="signupBirthday" type="date" placeholder="생일" />
+        <!-- 비활성화 : 회원가입시 설정이 아닌 내정보에서 수정하도록 진행 -->
+        <!-- <input id="signupBio" type="text" placeholder="자기소개" />
+        <input id="signupTag" type="text" placeholder="태그" /> -->
+        <button id="signup">회원가입</button>
+    </div>
+    <div class="form-group">
+        <h2>로그인</h2>
+        <input id="id" type="text" placeholder="아이디" />
+        <input id="pw" type="password" placeholder="비밀번호" />
+        <button id="send">로그인</button>
+    </div>
+    <button id="getUserInfo">유저정보</button>
+    <hr />
+    <div id="chatbox"></div>
+    <div id="result"></div>
+    <script>
+        const signup = document.querySelector('#signup');
+        const login = document.querySelector('#send');
+        const getUserInfo = document.querySelector('#getUserInfo');
+        var socket;
+        socket = io.connect("/");
+
+        signup.addEventListener("click", () => {
+            let userId = document.getElementById("signupId").value;
+            let userPassword = document.getElementById("signupPw").value;
+            let userName = document.getElementById("signupName").value;
+            let userBirthday = document.getElementById("signupBirthday").value;
+
+            console.log(userBirthday);
+            socket.emit("signUp", { userId, userPassword, userName, userBirthday });
+        });
+
+        socket.on('signUpRes', (data) => {
+            console.log(data);
+            document.getElementById("result").innerHTML = `회원가입 결과: ${data.status} - ${data.message}`;
+        });
+
+        socket.on('loginRes', (data) => {
+            console.log(data);
+            document.getElementById("result").innerHTML = `로그인 결과: ${data.status} - ${data.message}`;
+        });
+
+        socket.on('getUserInfoRes', (data) => {
+            console.log(data);
+            let userInfoString = JSON.stringify(data.message);
+            document.getElementById("result").innerHTML = `유저정보 결과: ${data.status} - ${userInfoString}`;
+        });
+
+        login.addEventListener("click", () => {
+            let userId = document.getElementById("id").value;
+            let userPassword = document.getElementById("pw").value;
+
+            socket.emit("login", { userId, userPassword });
+        });
+
+        getUserInfo.addEventListener("click", () => {
+            socket.emit("getUserInfo", "");
+        });
+    </script>
+</body>
+
+</html>

@@ -1,23 +1,31 @@
 const express = require('express');
 const { createServer } = require('http');
-const { swaggerUi, specs } = require("./swagger");
 const app = express();
 const httpServer = createServer(app);
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
+const { readdirSync } = require("fs");
 const io = new Server(httpServer, {
     pingInterval: 5000,
     pingTimeout: 120000
 });
-const api = require("./routers")(io);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", api);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+global.io = io;
 
-io.on("connection", (socket) => {
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/test/index.html');
+})
+
+io.on("connection", async (socket) => {
     console.log(socket.id + "is connected");
+
+    const events = readdirSync("./events");
+    events.forEach((file) => {
+        const event = require("./events/" + file);
+        socket.on(file.replace(".js", ""), (data) => event(socket, data));
+    });
 });
 
 mongoose
@@ -29,6 +37,6 @@ mongoose
         throw new Error("데이터베이스 연결에 실패했습니다.");
     });
 
-httpServer.listen(3000, () => {
-    console.log("Server listening on port 3000");
+httpServer.listen(80, () => {
+    console.log("Server listening on port 80");
 });
