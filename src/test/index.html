@@ -89,21 +89,11 @@
             document.getElementById("result").innerHTML = `로그인 결과: ${data.status} - ${data.message}`;
         });
 
-        socket.on('getUserInfoRes', (data) => {
-            console.log(data);
-            let userInfoString = JSON.stringify(data.message);
-            document.getElementById("result").innerHTML = `유저정보 결과: ${data.status} - ${userInfoString}`;
-        });
-
         login.addEventListener("click", () => {
             let userId = document.getElementById("id").value;
             let userPassword = document.getElementById("pw").value;
 
             socket.emit("login", { userId, userPassword });
-        });
-
-        getUserInfo.addEventListener("click", () => {
-            socket.emit("getUserInfo", "");
         });
     </script>
 </body>
