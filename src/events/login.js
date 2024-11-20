@@ -6,12 +6,20 @@ const LOGIN = async (socket, { userId, userPassword }) => {
         console.log(userId, userPassword);
         if (!userId || !userPassword) return socket.emit("loginRes", { status: 400, message: "아이디 또는 비밀번호를 확인해주세요" });
         const user = await User.findOne({ userId });
-        const isMatch = await bcrypt.compare(userPassword, user?.userPassword);
+        const isMatch = await bcrypt.compare(userPassword, user?.userPassword ?? " ");
         if (!user || !isMatch) return socket.emit("loginRes", { status: 400, message: "아이디 또는 비밀번호를 확인해주세요" });
 
+        const { userName, userBirthday, userTag, userBio, userProfileImgUrl } = user;
         socket.emit("loginRes", {
             status: 200,
             message: "로그인 성공",
+            data: {
+                userName,
+                userBirthday,
+                userTag,
+                userBio,
+                userProfileImgUrl
+            }
         });
         socket.user = user;
     } catch (err) {
