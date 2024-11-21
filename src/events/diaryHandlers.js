@@ -2,8 +2,6 @@ const Diary = require("../models/diaryModel");
 
 const diaryHandlers = async (socket, { type, data }) => {
   try {
-    console.log("서버로넘어왔다");
-    console.log(type, data);
     switch (type) {
       // 일기 생성 및 저장 CREATE
       case "create":
@@ -41,7 +39,6 @@ const diaryHandlers = async (socket, { type, data }) => {
       // 사용자가 선택한 일기 조회 READ
       case "read":
         const { readId } = data;
-        console.log("서버>클라로 넘겨준 readId", readId);
         const diary = await Diary.findById(readId);
 
         if (!diary) {

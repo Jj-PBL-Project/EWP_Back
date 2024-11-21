@@ -77,6 +77,27 @@
       <button id="readAllDiaries">일기 조회</button>
     </div>
 
+    <h1>일정</h1>
+    <div class="form-group">
+      <h2>일정 생성</h2>
+      <input id="scdTitle" type="text" placeholder="제목" />
+      <input id="isImportant" type="checkbox" /> 중요한 일정
+      <input id="scdLocation" type="text" placeholder="위치" />
+      <input id="startDate" type="date" placeholder="시작 날짜" />
+      <input id="endDate" type="date" placeholder="종료 날짜" />
+      <input id="tag" type="text" placeholder="태그" />
+      <input id="calendarName" type="text" placeholder="캘린더 이름" />
+      <textarea id="scdContent" placeholder="내용"></textarea>
+      <input id="scdAlarm" type="datetime-local" placeholder="알람 설정" />
+      <button id="createSchedule">일정 생성</button>
+    </div>
+
+    <div class="form-group">
+      <h2>일정 조회</h2>
+      <div id="scheduleList"></div>
+      <button id="readAllSchedules">일정 조회</button>
+    </div>
+
     <div id="result"></div>
 
     <script>
@@ -190,7 +211,7 @@
       `;
         } else {
           document.getElementById("result").innerHTML = `
-        <p>일기를 불러오는 데 실패했습니다: ${data.message}</p>
+        로그인 결과: ${data.status} - ${data.message}
       `;
         }
       });
@@ -200,7 +221,9 @@
         const newTitle = prompt("새 제목을 입력하세요:");
         const newContent = prompt("새 내용을 입력하세요:");
         if (!newTitle || !newContent) {
-          alert("수정 내용이 입력되지 않았습니다.");
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기수정 결과: ${data.status} - ${data.message}`;
           return;
         }
 
@@ -217,10 +240,14 @@
 
       socket.on("updateDiaryRes", (data) => {
         if (data.status === 200) {
-          alert("일기가 성공적으로 수정되었습니다.");
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기수정 결과: ${data.status} - ${data.message}`;
           document.getElementById("readAllDiaries").click(); // 갱신
         } else {
-          alert("일기 수정에 실패했습니다: " + data.message);
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기수정 결과: ${data.status} - ${data.message}`;
         }
       });
 
@@ -233,14 +260,183 @@
 
       socket.on("deleteDiaryRes", (data) => {
         if (data.status === "success") {
-          alert("일기가 성공적으로 삭제되었습니다.");
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기삭제 결과: ${data.status} - ${data.message}`;
           document.getElementById("readAllDiaries").click(); // 갱신
         } else {
-          alert("일기 삭제에 실패했습니다: " + data.message);
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기삭제 결과: ${data.status} - ${data.message}`;
         }
       });
 
       // 일정 부분
+      const createSchedule = document.querySelector("#createSchedule");
+      const readAllSchedules = document.querySelector("#readAllSchedules");
+
+      // 일정 생성 CREATE
+      document
+        .querySelector("#createSchedule")
+        .addEventListener("click", () => {
+          const scdTitle = document.getElementById("scdTitle").value;
+          const isImportant = document.getElementById("isImportant").checked;
+          const scdLocation = document.getElementById("scdLocation").value;
+          const startDate = document.getElementById("startDate").value;
+          const endDate = document.getElementById("endDate").value;
+          const tag = document.getElementById("tag").value;
+          const calendarName = document.getElementById("calendarName").value;
+          const scdContent = document.getElementById("scdContent").value;
+          const scdAlarm = document.getElementById("scdAlarm").value;
+          socket.emit("scheduleHandlers", {
+            type: "create",
+            data: {
+              scdTitle,
+              isImportant,
+              scdLocation,
+              startDate,
+              endDate,
+              tag,
+              calendarName,
+              scdContent,
+              scdAlarm,
+            },
+          });
+          socket.on("createScheduleRes", (data) => {
+            console.log(data);
+            document.getElementById(
+              "result"
+            ).innerHTML = `일정 생성 결과: ${data.status} - ${data.message}`;
+          });
+        });
+
+      // 일정 전체 조회 READ
+      document
+        .querySelector("#readAllSchedules")
+        .addEventListener("click", () => {
+          socket.emit("scheduleHandlers", { type: "readAll", data: {} });
+        });
+      socket.on("readAllScheduleRes", (data) => {
+        const scheduleList = document.getElementById("scheduleList");
+        scheduleList.innerHTML = "";
+        data.data.forEach((schedule) => {
+          const scheduleItem = document.createElement("div");
+          scheduleItem.classList.add("schedule-item");
+          scheduleItem.innerHTML = ` 
+            <strong>${schedule.scdTitle}</strong> 
+            <p>${schedule.scdContent}</p> 
+            <button onclick="viewSchedule('${schedule._id}')">보기</button> 
+            <button onclick="editSchedule('${schedule._id}')">수정하기</button> 
+            <button onclick="deleteSchedule('${schedule._id}')">지우기</button> 
+          `;
+          scheduleList.appendChild(scheduleItem);
+        });
+      });
+
+      // 선택한 일정 조회 READ
+      function viewSchedule(scheduleId) {
+        socket.emit("scheduleHandlers", {
+          type: "read",
+          data: { readId: scheduleId },
+        });
+      }
+
+      socket.on("readScheduleRes", (data) => {
+        if (data.status === 200) {
+          const schedule = data.data;
+          document.getElementById("result").innerHTML = ` 
+            <h3>일정 내용</h3> <p>제목: ${schedule.scdTitle}</p> 
+            <p>내용: ${schedule.scdContent}</p> 
+            <p>위치: ${schedule.scdLocation}</p> 
+            <p>시작 날짜: ${schedule.startDate}</p> 
+            <p>종료 날짜: ${schedule.endDate}</p> 
+            <p>태그: ${schedule.tag}</p> 
+            <p>캘린더 이름: ${schedule.calendarName}</p> 
+            <p>알람 설정: ${schedule.scdAlarm}</p>
+          `;
+        } else {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 조회 결과: ${data.status} - ${data.message}`;
+        }
+      });
+
+      // 일정 수정 UPDATE
+      function editSchedule(scheduleId) {
+        const newTitle = prompt("새 제목을 입력하세요:");
+        const newContent = prompt("새 내용을 입력하세요:");
+        const newLocation = prompt("새 위치를 입력하세요:");
+        const newStartDate = prompt("새 시작 날짜를 입력하세요:");
+        const newEndDate = prompt("새 종료 날짜를 입력하세요:");
+        const newTag = prompt("새 태그를 입력하세요:");
+        const newCalendarName = prompt("새 캘린더 이름을 입력하세요:");
+        const newAlarm = prompt("새 알람 시간을 입력하세요:");
+        const newIsImportant = confirm(
+          "이 일정을 중요한 일정으로 표시하시겠습니까?"
+        );
+        if (
+          !newTitle &&
+          !newContent &&
+          !newLocation &&
+          !newStartDate &&
+          !newEndDate &&
+          !newTag &&
+          !newCalendarName &&
+          !newAlarm
+        ) {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 수정 결과: ${data.status} - ${data.message}`;
+          return;
+        }
+        const updateData = {
+          updateId: scheduleId,
+          updateScdTitle: newTitle,
+          updateIsImportant: newIsImportant,
+          updateScdLocation: newLocation,
+          updateStartDate: newStartDate,
+          updateEndDate: newEndDate,
+          updateTag: newTag,
+          updateCalendarName: newCalendarName,
+          updateScdContent: newContent,
+          updateScdAlarm: newAlarm,
+        };
+        socket.emit("scheduleHandlers", { type: "update", data: updateData });
+      }
+      socket.on("updateScheduleRes", (data) => {
+        if (data.status === 200) {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 수정 결과: ${data.status} - ${data.message}`;
+          document.getElementById("readAllSchedules").click(); // 갱신
+        } else {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 수정 결과: ${data.status} - ${data.message}`;
+        }
+      });
+
+      // 일정 삭제 DELETE
+      function deleteSchedule(scheduleId) {
+        if (confirm("정말로 삭제하시겠습니까?")) {
+          socket.emit("scheduleHandlers", {
+            type: "delete",
+            data: { deleteId: scheduleId },
+          });
+        }
+      }
+      socket.on("deleteScheduleRes", (data) => {
+        if (data.status === 200) {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 삭제 결과: ${data.status} - ${data.message}`;
+          document.getElementById("readAllSchedules").click(); // 갱신
+        } else {
+          document.getElementById(
+            "result"
+          ).innerHTML = `일정 삭제 결과: ${data.status} - ${data.message}`;
+        }
+      });
     </script>
   </body>
 </html>
