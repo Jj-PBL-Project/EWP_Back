@@ -27,7 +27,7 @@ const createSchedule = async (
       calendarName,
       scdContent,
       scdAlarm,
-      UUID: v4(),
+      UUID: socket.user.UUID,
     });
     await newSchedule.save();
     socket.emit("createScheduleRes", {

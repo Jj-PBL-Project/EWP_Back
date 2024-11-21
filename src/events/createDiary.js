@@ -12,7 +12,7 @@ const createDiary = async (
       diaryLocation,
       diaryDate,
       diaryContent,
-      UUID: v4(),
+      UUID: socket.user.UUID,
     });
     await newDiary.save();
     socket.emit("createDiaryRes", {
