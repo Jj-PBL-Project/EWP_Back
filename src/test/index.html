@@ -76,21 +76,6 @@
       <div id="diaryList"></div>
       <button id="readAllDiaries">일기 조회</button>
     </div>
-    <!--
-    <div class="form-group">
-      <h2>일기 수정</h2>
-      <input id="updateDiaryId" type="text" placeholder="일기 ID" />
-      <input id="updateDiaryTitle" type="text" placeholder="수정할 제목" />
-      <textarea id="updateDiaryContent" placeholder="수정할 내용"></textarea>
-      <button id="updateDiary">일기 수정</button>
-    </div>
-
-    <div class="form-group">
-      <h2>일기 삭제</h2>
-      <input id="deleteDiaryId" type="text" placeholder="일기 ID" />
-      <button id="deleteDiary">일기 삭제</button>
-    </div>
--->
 
     <div id="result"></div>
 
@@ -135,8 +120,6 @@
       // 일기 부분
       const createDiary = document.querySelector("#createDiary");
       const readAllDiaries = document.querySelector("#readAllDiaries");
-      // const updateDiary = document.querySelector("#updateDiary");
-      // const deleteDiary = document.querySelector("#deleteDiary");
 
       // 일기 생성 CREATE
       createDiary.addEventListener("click", () => {
@@ -256,6 +239,8 @@
           alert("일기 삭제에 실패했습니다: " + data.message);
         }
       });
+
+      // 일정 부분
     </script>
   </body>
 </html>
