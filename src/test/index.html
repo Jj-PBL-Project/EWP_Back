@@ -2,100 +2,260 @@
 
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Test Page</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        .chat {
-            border: 1px solid black;
-            width: 400px;
-        }
+      .chat {
+        border: 1px solid black;
+        width: 400px;
+      }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+      .form-group {
+        margin-bottom: 15px;
+      }
 
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-        }
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+      }
 
-        .form-group button {
-            padding: 10px;
-            width: 100%;
-        }
+      .form-group button {
+        padding: 10px;
+        width: 100%;
+      }
 
-        #result {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+      #result {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>회원가입 및 로그인</h1>
     <div class="form-group">
-        <h2>회원가입</h2>
-        <input id="signupId" type="text" placeholder="아이디" />
-        <input id="signupPw" type="password" placeholder="비밀번호" />
-        <input id="signupName" type="text" placeholder="이름" />
-        <input id="signupBirthday" type="date" placeholder="생일" />
-        <!-- 비활성화 : 회원가입시 설정이 아닌 내정보에서 수정하도록 진행 -->
-        <!-- <input id="signupBio" type="text" placeholder="자기소개" />
+      <h2>회원가입</h2>
+      <input id="signupId" type="text" placeholder="아이디" />
+      <input id="signupPw" type="password" placeholder="비밀번호" />
+      <input id="signupName" type="text" placeholder="이름" />
+      <input id="signupBirthday" type="date" placeholder="생일" />
+      <!-- 비활성화 : 회원가입시 설정이 아닌 내정보에서 수정하도록 진행 -->
+      <!-- <input id="signupBio" type="text" placeholder="자기소개" />
         <input id="signupTag" type="text" placeholder="태그" /> -->
-        <button id="signup">회원가입</button>
+      <button id="signup">회원가입</button>
     </div>
     <div class="form-group">
-        <h2>로그인</h2>
-        <input id="id" type="text" placeholder="아이디" />
-        <input id="pw" type="password" placeholder="비밀번호" />
-        <button id="send">로그인</button>
+      <h2>로그인</h2>
+      <input id="id" type="text" placeholder="아이디" />
+      <input id="pw" type="password" placeholder="비밀번호" />
+      <button id="send">로그인</button>
     </div>
     <button id="getUserInfo">유저정보</button>
     <hr />
     <div id="chatbox"></div>
+
+    <h1>일기</h1>
+    <div class="form-group">
+      <h2>일기 생성</h2>
+      <input id="diaryTitle" type="text" placeholder="제목" />
+      <textarea id="diaryContent" placeholder="내용"></textarea>
+      <input id="diaryLocation" type="text" placeholder="위치" />
+      <input id="diaryDate" type="date" placeholder="날짜" />
+      <button id="createDiary">일기 생성</button>
+    </div>
+
+    <div class="form-group">
+      <h2>일기 조회</h2>
+      <div id="diaryList"></div>
+      <button id="readAllDiaries">일기 조회</button>
+    </div>
+    <!--
+    <div class="form-group">
+      <h2>일기 수정</h2>
+      <input id="updateDiaryId" type="text" placeholder="일기 ID" />
+      <input id="updateDiaryTitle" type="text" placeholder="수정할 제목" />
+      <textarea id="updateDiaryContent" placeholder="수정할 내용"></textarea>
+      <button id="updateDiary">일기 수정</button>
+    </div>
+
+    <div class="form-group">
+      <h2>일기 삭제</h2>
+      <input id="deleteDiaryId" type="text" placeholder="일기 ID" />
+      <button id="deleteDiary">일기 삭제</button>
+    </div>
+-->
+
     <div id="result"></div>
+
     <script>
-        const signup = document.querySelector('#signup');
-        const login = document.querySelector('#send');
-        const getUserInfo = document.querySelector('#getUserInfo');
-        var socket;
-        socket = io.connect("/");
+      const signup = document.querySelector("#signup");
+      const login = document.querySelector("#send");
+      const getUserInfo = document.querySelector("#getUserInfo");
+      var socket;
+      socket = io.connect("/");
 
-        signup.addEventListener("click", () => {
-            let userId = document.getElementById("signupId").value;
-            let userPassword = document.getElementById("signupPw").value;
-            let userName = document.getElementById("signupName").value;
-            let userBirthday = document.getElementById("signupBirthday").value;
+      signup.addEventListener("click", () => {
+        let userId = document.getElementById("signupId").value;
+        let userPassword = document.getElementById("signupPw").value;
+        let userName = document.getElementById("signupName").value;
+        let userBirthday = document.getElementById("signupBirthday").value;
 
-            console.log(userBirthday);
-            socket.emit("signUp", { userId, userPassword, userName, userBirthday });
+        console.log(userBirthday);
+        socket.emit("signUp", { userId, userPassword, userName, userBirthday });
+      });
+
+      socket.on("signUpRes", (data) => {
+        console.log(data);
+        document.getElementById(
+          "result"
+        ).innerHTML = `회원가입 결과: ${data.status} - ${data.message}`;
+      });
+
+      socket.on("loginRes", (data) => {
+        console.log(data);
+        document.getElementById(
+          "result"
+        ).innerHTML = `로그인 결과: ${data.status} - ${data.message}`;
+      });
+
+      login.addEventListener("click", () => {
+        let userId = document.getElementById("id").value;
+        let userPassword = document.getElementById("pw").value;
+
+        socket.emit("login", { userId, userPassword });
+      });
+
+      // 일기 부분
+      const createDiary = document.querySelector("#createDiary");
+      const readAllDiaries = document.querySelector("#readAllDiaries");
+      // const updateDiary = document.querySelector("#updateDiary");
+      // const deleteDiary = document.querySelector("#deleteDiary");
+
+      // 일기 생성 CREATE
+      createDiary.addEventListener("click", () => {
+        let diaryTitle = document.getElementById("diaryTitle").value;
+        let diaryLocation = document.getElementById("diaryLocation").value;
+        let diaryDate = document.getElementById("diaryDate").value;
+        let diaryContent = document.getElementById("diaryContent").value;
+
+        console.log(diaryTitle);
+        socket.emit("diaryHandlers", {
+          type: "create",
+          data: { diaryTitle, diaryLocation, diaryDate, diaryContent },
         });
 
-        socket.on('signUpRes', (data) => {
-            console.log(data);
-            document.getElementById("result").innerHTML = `회원가입 결과: ${data.status} - ${data.message}`;
+        socket.on("createDiaryRes", (data) => {
+          console.log(data);
+          document.getElementById(
+            "result"
+          ).innerHTML = `일기생성 결과: ${data.status} - ${data.message}`;
+        });
+      });
+
+      // 일기 전체 조회 READ
+      document
+        .querySelector("#readAllDiaries")
+        .addEventListener("click", () => {
+          socket.emit("diaryHandlers", {
+            type: "readAll",
+            data: {},
+          });
         });
 
-        socket.on('loginRes', (data) => {
-            console.log(data);
-            document.getElementById("result").innerHTML = `로그인 결과: ${data.status} - ${data.message}`;
-        });
+      socket.on("readAllDiaryRes", (data) => {
+        const diaryList = document.getElementById("diaryList");
+        diaryList.innerHTML = "";
 
-        login.addEventListener("click", () => {
-            let userId = document.getElementById("id").value;
-            let userPassword = document.getElementById("pw").value;
-
-            socket.emit("login", { userId, userPassword });
+        data.data.forEach((diary) => {
+          const diaryItem = document.createElement("div");
+          diaryItem.classList.add("diary-item");
+          diaryItem.innerHTML = `
+                <strong>${diary.diaryTitle}</strong>
+                <p>${diary.diaryContent}</p>
+                <button onclick="viewDiary('${diary._id}')">보기</button>
+                <button onclick="editDiary('${diary._id}')">수정하기</button>
+                <button onclick="deleteDiary('${diary._id}')">지우기</button>
+            `;
+          diaryList.appendChild(diaryItem);
         });
+      });
+
+      // 일기 보기 (특정 ID)
+      function viewDiary(diaryId) {
+        socket.emit("diaryHandlers", {
+          type: "read",
+          data: { readId: diaryId },
+        });
+      }
+
+      socket.on("readDiaryRes", (data) => {
+        if (data.status === 200) {
+          const diary = data.data;
+          document.getElementById("result").innerHTML = `
+        <h3>일기 내용</h3>
+        <p>제목: ${diary.diaryTitle}</p>
+        <p>내용: ${diary.diaryContent}</p>
+        <p>위치: ${diary.diaryLocation}</p>
+        <p>날짜: ${diary.diaryDate}</p>
+      `;
+        } else {
+          document.getElementById("result").innerHTML = `
+        <p>일기를 불러오는 데 실패했습니다: ${data.message}</p>
+      `;
+        }
+      });
+
+      // 일기 수정 (특정 ID)
+      function editDiary(diaryId) {
+        const newTitle = prompt("새 제목을 입력하세요:");
+        const newContent = prompt("새 내용을 입력하세요:");
+        if (!newTitle || !newContent) {
+          alert("수정 내용이 입력되지 않았습니다.");
+          return;
+        }
+
+        const updateData = {
+          updateId: diaryId,
+          updateDiaryTitle: newTitle,
+          updateDiaryContent: newContent,
+        };
+        socket.emit("diaryHandlers", {
+          type: "update",
+          data: updateData,
+        });
+      }
+
+      socket.on("updateDiaryRes", (data) => {
+        if (data.status === 200) {
+          alert("일기가 성공적으로 수정되었습니다.");
+          document.getElementById("readAllDiaries").click(); // 갱신
+        } else {
+          alert("일기 수정에 실패했습니다: " + data.message);
+        }
+      });
+
+      // 일기 삭제 (특정 ID)
+      function deleteDiary(diaryId) {
+        if (confirm("정말로 삭제하시겠습니까?")) {
+          socket.emit("diaryHandlers", { type: "delete", data: { diaryId } });
+        }
+      }
+
+      socket.on("deleteDiaryRes", (data) => {
+        if (data.status === "success") {
+          alert("일기가 성공적으로 삭제되었습니다.");
+          document.getElementById("readAllDiaries").click(); // 갱신
+        } else {
+          alert("일기 삭제에 실패했습니다: " + data.message);
+        }
+      });
     </script>
-</body>
-
+  </body>
 </html>
