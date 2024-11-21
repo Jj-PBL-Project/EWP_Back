@@ -1,5 +1,4 @@
 const Schedule = require("../models/scheduleModel");
-const { v4 } = require("uuid");
 
 const createSchedule = async (
   socket,

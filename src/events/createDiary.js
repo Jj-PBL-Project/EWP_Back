@@ -1,5 +1,4 @@
 const Diary = require("../models/diaryModel");
-const { v4 } = require("uuid");
 
 const createDiary = async (
   socket,
