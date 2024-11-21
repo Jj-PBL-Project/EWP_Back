@@ -4,9 +4,14 @@ const { v4 } = require("uuid");
 
 const signup = async (socket, { userName, userBirthday, userId, userPassword }) => {
     try {
+        if (!userName || !userBirthday || !userId || !userPassword) return socket.emit("signUpRes", { status: 400, message: "잘못된 요청입니다." });
         // 비밀번호 암호화
         const salt = await bcrypt.genSaltSync(10);
         const hashPassword = await bcrypt.hashSync(userPassword, salt);
+
+        const existingUserId = await User.find({ userId });
+
+        if (existingUserId) return socket.emit("signUpRes", { status: 401, message: "이미 사용중인 아이디입니다." });
 
         const existingUserName = await User.find({ userName });
 
