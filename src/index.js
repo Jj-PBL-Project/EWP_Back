@@ -8,6 +8,7 @@ const { readdirSync } = require("fs");
 const io = new Server(httpServer, {
     pingInterval: 5000,
     pingTimeout: 120000,
+    path: "/api/socket.io",
 });
 
 app.use(express.json());
