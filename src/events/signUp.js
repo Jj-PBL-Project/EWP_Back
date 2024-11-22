@@ -11,8 +11,7 @@ const signup = async (socket, { userName, userBirthday, userId, userPassword }) 
 
         const existingUserId = await User.find({ userId });
 
-        if (existingUserId) return socket.emit("signUpRes", { status: 401, message: "이미 사용중인 아이디입니다." });
-
+        if (existingUserId.length != 0) return socket.emit("signUpRes", { status: 401, message: "이미 사용중인 아이디입니다." });
         const existingUserName = await User.find({ userName });
 
         const generateTag = async () => {
