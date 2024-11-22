@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 global.io = io;
 
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
     res.sendFile(__dirname + "/test/index.html");
 });
 
