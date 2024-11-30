@@ -1,4 +1,5 @@
 const Diary = require("../models/diaryModel");
+const { v4 } = require("uuid");
 
 const diaryHandlers = async (socket, { type, data }) => {
   try {
@@ -24,7 +25,7 @@ const diaryHandlers = async (socket, { type, data }) => {
           diaryLocation,
           diaryDate,
           diaryContent,
-          UUID: socket.user.UUID,
+          UUID: v4(),
           createUser: socket.user.UUID,
         });
         await newDiary.save();
@@ -46,8 +47,8 @@ const diaryHandlers = async (socket, { type, data }) => {
 
       // 사용자가 선택한 일기 조회 READ
       case "read":
-        const { readId } = data;
-        const diary = await Diary.findById(readId);
+        var { UUID } = data;
+        const diary = await Diary.findOne({ UUID });
 
         if (!diary) {
           socket.emit("readDiaryRes", {
@@ -65,7 +66,7 @@ const diaryHandlers = async (socket, { type, data }) => {
 
       // 일기 수정 UPDATE
       case "update":
-        const { updateId, updateDiaryTitle, updateDiaryContent } = data;
+        var { UUID, updateDiaryTitle, updateDiaryContent } = data;
         // 수정 사항만 추가
         const updateFields = {};
         if (updateDiaryTitle !== undefined)
@@ -82,8 +83,8 @@ const diaryHandlers = async (socket, { type, data }) => {
         }
 
         const updateDiary = await Diary.findByIdAndUpdate(
-          updateId,
-          updateFields,
+          UUID,
+          { $set: updateFields },
           { new: true }
         );
         if (!updateDiary) {
@@ -102,8 +103,8 @@ const diaryHandlers = async (socket, { type, data }) => {
 
       // 일기 삭제 DELETE
       case "delete":
-        const { deleteId } = data;
-        const deleteDiary = await Diary.findOneAndDelete(deleteId);
+        var { UUID } = data;
+        const deleteDiary = await Diary.findOneAndDelete({ UUID });
 
         if (!deleteDiary) {
           socket.emit("deleteDiaryRes", {
