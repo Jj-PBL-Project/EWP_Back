@@ -1,4 +1,5 @@
 const Schedule = require("../models/scheduleModel");
+const { v4 } = require("uuid");
 
 const scheduleHandler = async (socket, { type, data }) => {
   try {
@@ -26,7 +27,7 @@ const scheduleHandler = async (socket, { type, data }) => {
           calendarName,
           scdContent,
           scdAlarm,
-          UUID: socket.user.UUID,
+          UUID: v4(),
         });
         await newSchedule.save();
         socket.emit("createScheduleRes", {
@@ -63,8 +64,8 @@ const scheduleHandler = async (socket, { type, data }) => {
 
       // 선택 일정 조회 READ
       case "read":
-        const { readId } = data;
-        const schedule = await Schedule.findById(readId);
+        var { UUID } = data;
+        const schedule = await Schedule.findOne({ UUID });
         if (!schedule) {
           socket.emit("readScheduleRes", {
             status: 404,
@@ -103,8 +104,7 @@ const scheduleHandler = async (socket, { type, data }) => {
 
       // 일정 수정 UPDATE
       case "update":
-        const {
-          updateId,
+        var {
           updateScdTitle,
           updateIsImportant,
           updateScdLocation,
@@ -114,6 +114,7 @@ const scheduleHandler = async (socket, { type, data }) => {
           updateCalendarName,
           updateScdContent,
           updateScdAlarm,
+          UUID
         } = data;
         // 수정사항 있는 것만 업데이트에 추가
         const updateFields = {};
@@ -141,7 +142,7 @@ const scheduleHandler = async (socket, { type, data }) => {
           break;
         }
         const updatedSchedule = await Schedule.findByIdAndUpdate(
-          updateId,
+          UUID,
           { $set: updateFields },
           { new: true }
         );
@@ -161,8 +162,8 @@ const scheduleHandler = async (socket, { type, data }) => {
 
       // 일정 삭제 DELETE
       case "delete":
-        const { deleteId } = data;
-        const deleteSchedule = await Schedule.findByIdAndDelete(deleteId);
+        var { UUID } = data;
+        const deleteSchedule = await Schedule.findByIdAndDelete(UUID);
         if (!deleteSchedule) {
           socket.emit("deleteScheduleRes", {
             status: 404,
