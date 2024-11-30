@@ -83,8 +83,8 @@ const scheduleHandler = async (socket, { type, data }) => {
       case "search":
         const { keyword } = data;
         const searchSchedule = await Schedule.find({
-          UUID: socket.user.UUID,
-          schTitle: { $regex: keyword },
+          tag: { $in: [socket.user.UUID] },
+          schTitle: { $regex: keyword, $options: "i" },
         });
 
         if (searchSchedule.length == 0) {
