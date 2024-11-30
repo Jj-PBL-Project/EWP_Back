@@ -5,12 +5,19 @@ const diaryHandlers = async (socket, { type, data }) => {
     switch (type) {
       // 일기 생성 및 저장 CREATE
       case "create":
-        const { diaryTitle, diaryLocation, diaryDate, diaryContent } = data;
+        const {
+          diaryTitle,
+          diaryLocation,
+          diaryDate,
+          diaryContent,
+          createUser,
+        } = data;
         console.log("diaryHandlers.js : ", {
           diaryTitle,
           diaryLocation,
           diaryDate,
           diaryContent,
+          createUser,
         });
         const newDiary = new Diary({
           diaryTitle,
@@ -18,6 +25,7 @@ const diaryHandlers = async (socket, { type, data }) => {
           diaryDate,
           diaryContent,
           UUID: socket.user.UUID,
+          createUser: socket.user.UUID,
         });
         await newDiary.save();
         socket.emit("createDiaryRes", {
