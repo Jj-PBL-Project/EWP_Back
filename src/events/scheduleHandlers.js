@@ -17,13 +17,21 @@ const scheduleHandler = async (socket, { type, data }) => {
           scdContent,
           scdAlarm,
         } = data;
+
+        var userUUIDList = [];
+
+        for (let i = 0; i < tag.length; i++) {
+          const { userUUID } = await User.findOne({ userName, userTag });
+          userUUIDList.push(userUUID);
+        };
+
         const newSchedule = new Schedule({
           scdTitle,
           isImportant,
           scdLocation,
           startDate,
           endDate,
-          tag,
+          tag: [...userUUIDList, socket.user.UUID],
           calendarName,
           scdContent,
           scdAlarm,
