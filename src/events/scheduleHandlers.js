@@ -1,6 +1,6 @@
 const Schedule = require("../models/scheduleModel");
 
-const createSchedule = async (socket, { type, data }) => {
+const scheduleHandler = async (socket, { type, data }) => {
   try {
     switch (type) {
       // 일정 생성 CREATE
@@ -39,13 +39,20 @@ const createSchedule = async (socket, { type, data }) => {
       // 일정 한달 조회 READ
       case "readMonth":
         const today = new Date();
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const firstDayOfMonth = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          1
+        );
+        const lastDayOfMonth = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          0
+        );
         const schedules = await Schedule.find({
           UUID: socket.user.UUID,
           startDate: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
         });
-
 
         socket.emit("readMonthScheduleRes", {
           status: 200,
@@ -162,4 +169,4 @@ const createSchedule = async (socket, { type, data }) => {
   }
 };
 
-module.exports = createSchedule;
+module.exports = scheduleHandler;
