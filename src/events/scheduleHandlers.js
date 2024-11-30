@@ -36,10 +36,18 @@ const createSchedule = async (socket, { type, data }) => {
         });
         break;
 
-      // 일정 전체 조회 READ
-      case "readAll":
-        const schedules = await Schedule.find({ UUID: socket.user.UUID });
-        socket.emit("readAllScheduleRes", {
+      // 일정 한달 조회 READ
+      case "readMonth":
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const schedules = await Schedule.find({
+          UUID: socket.user.UUID,
+          startDate: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+        });
+
+
+        socket.emit("readMonthScheduleRes", {
           status: 200,
           message: "일정 조회를 완료했습니다.",
           data: schedules,
