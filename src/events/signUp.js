@@ -29,7 +29,8 @@ const signup = async (socket, { userName, userBirthday, userId, userPassword }) 
             userId,
             userPassword: hashPassword,
             UUID: v4(),
-            userTag: await generateTag()
+            userTag: await generateTag(),
+            userAlarm: []
         });
         await newUser.save();
         socket.emit("signUpRes", { status: 201, message: "계정 생성이 완료되었습니다." });

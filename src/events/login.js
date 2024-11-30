@@ -8,7 +8,7 @@ const LOGIN = async (socket, { userId, userPassword }) => {
         const isMatch = await bcrypt.compare(userPassword, user?.userPassword ?? " ");
         if (!user || !isMatch) return socket.emit("loginRes", { status: 401, message: "아이디 또는 비밀번호를 확인해주세요." });
 
-        const { userName, userBirthday, userTag, userBio, userProfileImgUrl } = user;
+        const { userName, userBirthday, userTag, userBio, userProfileImgUrl, userAlarm } = user;
         socket.emit("loginRes", {
             status: 200,
             message: "로그인 성공",
@@ -17,7 +17,8 @@ const LOGIN = async (socket, { userId, userPassword }) => {
                 userBirthday,
                 userTag,
                 userBio,
-                userProfileImgUrl
+                userProfileImgUrl,
+                userAlarm: userAlarm
             }
         });
         socket.user = user;

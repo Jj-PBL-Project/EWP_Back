@@ -41,6 +41,24 @@ const userSchema = new mongoose.Schema({
     // 프로필 사진
     type: String,
     required: false
+  },
+  userAlarm: {
+    type: [{
+      alarmType: {
+        type: String,
+        enum: ['alarm', 'invite'],
+        required: true
+      },
+      UUID: {
+        type: String,
+        required: true
+      },
+      createdAt: {
+        type: Date,
+        required: true
+      }
+    }],
+    required: true
   }
 });
 
