@@ -79,6 +79,28 @@ const scheduleHandler = async (socket, { type, data }) => {
         }
         break;
 
+      // 일정 검색 SEARCH
+      case "search":
+        const { keyword } = data;
+        const searchSchedule = await Schedule.find({
+          UUID: socket.user.UUID,
+          schTitle: { $regex: keyword },
+        });
+
+        if (searchSchedule.length == 0) {
+          socket.emit("searchScheduleRes", {
+            status: 404,
+            message: "검색 결과가 없습니다..",
+          });
+        } else {
+          socket.emit("searchScheduleRes", {
+            status: 200,
+            message: "검색 결과를 찾았습니다.",
+            data: searchSchedule,
+          });
+        }
+        break;
+
       // 일정 수정 UPDATE
       case "update":
         const {
