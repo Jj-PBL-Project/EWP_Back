@@ -1,9 +1,19 @@
 const mongoose = require("mongoose");
 
-/*
-scheduleTitle < 이렇게 풀명칭으로 할지
-scdTitle < 이렇게 줄임으로 할지
-*/
+/**
+ * 일정 데이터 모델
+ * UUID : 일정 구분용 고유키
+ * scdTitle : 일정 제목
+ * isImportant : 중요 체크박스
+ * scdLocation : 일정 장소
+ * startDate : 일정 시작일시
+ * endDate : 일정 종료일시
+ * tag : 일정 참석자
+ * - 참석자들의 UUID들을 배열로 저장
+ * calendarName : 일정 캘린더
+ * scdContent : 일정 설명
+ */
+
 const scheduleSchema = new mongoose.Schema({
   UUID: {
     // 외래키

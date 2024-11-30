@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+/**
+ * 유저 데이터 모델
+ * UUID : 유저 구분용 고유키
+ * userName : 유저 이름
+ * userBirthday : 생년월일
+ * userId : 아이디
+ * userPassword : 비밀번호
+ * userTag : 태그
+ * userBio : 상태메세지
+ * userProfileImgUrl : 프로필 사진
+ * userAlarm : 알람리스트
+ * - alarmType : 알람 타입
+ * - UUID : 알람 구분용 고유키
+ * - createdAt : 알람 생성 시간
+ */
+
 const userSchema = new mongoose.Schema({
   UUID: {
     // 외래키
