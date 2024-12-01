@@ -6,9 +6,8 @@ const scheduleHandler = async (socket, { type, data }) => {
     switch (type) {
       // 일정 생성 CREATE
       case "create":
-        const {
+        var {
           scdTitle,
-          isImportant,
           scdLocation,
           startDate,
           endDate,
@@ -49,20 +48,10 @@ const scheduleHandler = async (socket, { type, data }) => {
 
       // 일정 한달 조회 READ
       case "readMonth":
-        const today = new Date();
-        const firstDayOfMonth = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          1
-        );
-        const lastDayOfMonth = new Date(
-          today.getFullYear(),
-          today.getMonth() + 1,
-          0
-        );
+        var { startDate, endDate } = data;
         const schedules = await Schedule.find({
-          UUID: socket.user.UUID,
-          startDate: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+          tag: { $in: [socket.user.UUID] },
+          startDate: { $gte: startDate, $lte: endDate },
         });
 
         socket.emit("readMonthScheduleRes", {
