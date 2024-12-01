@@ -18,7 +18,7 @@ const LOGIN = async (socket, { userId, userPassword }) => {
                 userTag,
                 userBio,
                 userProfileImgUrl,
-                userAlarm: userAlarm
+                userAlarm
             }
         });
         socket.user = user;
