@@ -114,7 +114,6 @@ const scheduleHandler = async (socket, { type, data }) => {
       case "update":
         var {
           updateScdTitle,
-          updateIsImportant,
           updateScdLocation,
           updateStartDate,
           updateEndDate,
@@ -128,8 +127,6 @@ const scheduleHandler = async (socket, { type, data }) => {
         const updateFields = {};
         if (updateScdTitle !== undefined)
           updateFields.scdTitle = updateScdTitle;
-        if (updateIsImportant !== undefined)
-          updateFields.isImportant = updateIsImportant;
         if (updateScdLocation !== undefined)
           updateFields.scdLocation = updateScdLocation;
         if (updateStartDate !== undefined)
