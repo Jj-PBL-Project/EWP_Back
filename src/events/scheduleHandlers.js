@@ -145,9 +145,75 @@ const scheduleHandler = async (socket, { type, data }) => {
             message: "수정사항이 없습니다.",
           });
           break;
+        };
+
+        schedule = await Schedule.findOne({ UUID });
+        if (!schedule) {
+          socket.emit("updateScheduleRes", {
+            status: 404,
+            message: "일정을 찾을 수 없습니다.",
+          });
+        };
+
+        for (let i = 0; i < updateFields.tag.length; i++) {
+          const [userName, userTag] = updateFields.tag[i].split("#");
+          const user = await User.findOne({ userName, userTag });
+          if (!user) continue;
+
+          updateFields.tag[i] = user.UUID;
+        };
+
+        for (let i = 0; i < schedule.tag.length; i++) {
+          if (!updateFields.tag.includes(schedule.tag[i])) {
+            const user = await User.findOne({ UUID: schedule.tag[i] });
+            if (!user) continue;
+            const newAlarm = {
+              alarmType: "alarm",
+              UUID: v4(),
+              createdAt: new Date(),
+              content: "일정(" + schedule.scdTitle + ")이 " + socket.user.userName + "#" + socket.user.userTag + "님에 의해 일정에서 제외되었습니다.",
+            };
+            await User.updateOne({ UUID: user.UUID }, {
+              $push: {
+                userAlarm: newAlarm
+              }
+            });
+
+            global.io.to(user.UUID).emit("newAlarmRes", {
+              status: 200,
+              message: "일정이 업데이트된 완료된 일정이 삭제되었습니다.",
+              data: newAlarm
+            });
+          }
         }
-        const updatedSchedule = await Schedule.findByIdAndUpdate(
-          UUID,
+
+        for (let i = 0; i < updateFields.tag.length; i++) {
+          if (!schedule.tag.includes(updateFields.tag[i])) {
+            const user = await User.findOne({ UUID: updateFields.tag[i] });
+            if (!user) continue;
+            const newAlarm = {
+              alarmType: "invite",
+              UUID: v4(),
+              createdAt: new Date(),
+              content: schedule.scdTitle,
+              schedule: updateFields,
+            };
+            await User.updateOne({ UUID: user.UUID }, {
+              $push: {
+                userAlarm: newAlarm
+              }
+            });
+            updateFields.tag.splice(i, 1);
+
+            global.io.to(user.UUID).emit("newAlarmRes", {
+              status: 200,
+              message: "일정에 초대되었습니다.",
+              data: newAlarm
+            });
+          }
+        }
+        const updatedSchedule = await Schedule.findOneAndUpdate(
+          { UUID },
           { $set: updateFields },
           { new: true }
         );
@@ -162,26 +228,79 @@ const scheduleHandler = async (socket, { type, data }) => {
             message: "일정 수정이 완료되었습니다.",
             data: updatedSchedule,
           });
+          for (let i = 0; i < updateFields.tag.length; i++) {
+            const user = await User.findOne({ UUID: updateFields.tag[i] });
+            if (!user) continue;
+            const newAlarm = {
+              alarmType: "alarm",
+              UUID: v4(),
+              createdAt: new Date(),
+              content: "일정(" + updateFields.scdTitle + ")이 " + socket.user.userName + "#" + socket.user.userTag + "님에 의해 업데이트 되었습니다.",
+            };
+            await User.updateOne({ UUID: user.UUID }, {
+              $push: {
+                userAlarm: newAlarm
+              }
+            });
+
+            global.io.to(user.UUID).emit("newAlarmRes", {
+              status: 200,
+              message: "일정이 업데이트 되었습니다.",
+              data: newAlarm
+            });
+          }
         }
         break;
 
       // 일정 삭제 DELETE
       case "delete":
         var { UUID } = data;
-        const deleteSchedule = await Schedule.findByIdAndDelete(UUID);
-        if (!deleteSchedule) {
+        schedule = await Schedule.findOne({ UUID });
+        if (!schedule) {
           socket.emit("deleteScheduleRes", {
             status: 404,
-            message: "해당 일정을 찾을 수 없습니다.",
+            message: "일정을 찾을 수 없습니다.",
+          });
+        } else if (schedule.tag.length == 1 || schedule.tag[0] == socket.user.UUID) {
+          await Schedule.findOneAndDelete({ UUID });
+          socket.emit("deleteScheduleRes", {
+            status: 200,
+            message: "일정 삭제가 완료되었습니다.",
           });
         } else {
+          await Schedule.findOneAndUpdate(
+            { _id: UUID, "tag.UUID": socket.user.UUID },
+            { $pull: { tag: socket.user.UUID } }
+          );
           socket.emit("deleteScheduleRes", {
             status: 200,
             message: "일정 삭제가 완료되었습니다.",
           });
         }
-        break;
 
+        for (let i = 0; i < schedule.tag.length; i++) {
+          const user = await User.findOne({ UUID: schedule.tag[i] });
+          if (!user) continue;
+          const newAlarm = {
+            alarmType: "alarm",
+            UUID: v4(),
+            createdAt: new Date(),
+            content: "일정(" + schedule.scdTitle + ")이 " + socket.user.userName + "#" + socket.user.userTag + "님에 의해 삭제되었습니다.",
+          };
+          await User.updateOne({ UUID: user.UUID }, {
+            $push: {
+              userAlarm: newAlarm
+            }
+          });
+
+          global.io.to(user.UUID).emit("newAlarmRes", {
+            status: 200,
+            message: "일정이 삭제되었습니다.",
+            data: newAlarm
+          });
+        };
+
+        break;
       default:
         socket.emit("scheduleRes", {
           status: 400,
