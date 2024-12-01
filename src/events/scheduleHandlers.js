@@ -94,10 +94,20 @@ const scheduleHandler = async (socket, { type, data }) => {
           startDate: { $gte: startDate, $lte: endDate },
         });
 
+        var scheduleDatas = [];
+        for (let i = 0; i < schedules.length; i++) {
+          const scheduleData = schedules[i];
+          for (let j = 0; j < schedules[i].tag.length; j++) {
+            const user = await User.findOne({ UUID: schedules[i].tag[j] });
+            scheduleData.tag[j] = user.userName + "#" + user.userTag;
+          }
+          scheduleDatas.push(scheduleData);
+        }
+
         socket.emit("readMonthScheduleRes", {
           status: 200,
           message: "일정 조회를 완료했습니다.",
-          data: schedules,
+          data: scheduleDatas,
         });
         break;
 
