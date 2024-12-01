@@ -44,6 +44,12 @@ const scheduleHandler = async (socket, { type, data }) => {
           message: "일정 생성이 완료되었습니다.",
           data: newSchedule,
         });
+
+        socket.emit("newAlarmRes", {
+          status: 200,
+          message: "새로운 일정이 생성되었습니다.",
+          data
+        });
         break;
 
       // 일정 한달 조회 READ
