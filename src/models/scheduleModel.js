@@ -25,11 +25,6 @@ const scheduleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isImportant: {
-    // 중요 체크박스
-    type: Boolean,
-    dafault: false,
-  },
   scdLocation: {
     // 장소
     type: String,
@@ -47,9 +42,13 @@ const scheduleSchema = new mongoose.Schema({
   },
   tag: {
     // 참석자
-    // 참석자의 태그값만 POST로 넘겨주는건가요?
     type: [String], // 배열 필드
     required: true,
+  },
+  color: {
+    // 색상
+    type: String,
+    required: true
   },
   calendarName: {
     // 캘린더
