@@ -5,7 +5,7 @@ const checkUserId = async (socket, { userId }) => {
         if (!userId) return socket.emit("checkUserIdRes", { status: 400, message: "잘못된 요청입니다." });
         const existingUserId = await User.find({ userId });
 
-        if (existingUserId) return socket.emit("checkUserIdRes", { status: 401, message: "이미 사용중인 아이디입니다." });
+        if (existingUserId.length != 0) return socket.emit("checkUserIdRes", { status: 401, message: "이미 사용중인 아이디입니다." });
 
         socket.emit("checkUserIdRes", { status: 200, message: "사용 가능한 아이디입니다." });
     } catch (err) {
