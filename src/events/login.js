@@ -22,6 +22,7 @@ const LOGIN = async (socket, { userId, userPassword }) => {
             }
         });
         socket.user = user;
+        socket.join(socket.user.UUID);
     } catch (err) {
         console.error(err);
         socket.emit("loginRes", { status: 500, message: "오류가 발생하였습니다.\n관리자에게 문의해주세요!" });
