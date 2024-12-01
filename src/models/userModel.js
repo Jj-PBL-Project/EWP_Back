@@ -76,6 +76,50 @@ const userSchema = new mongoose.Schema({
       content: {
         type: String,
         required: false
+      },
+      schedule: {
+        type: {
+          scdTitle: {
+            type: String,
+            required: true
+          },
+          scdLocation: {
+            type: String,
+            required: true
+          },
+          startDate: {
+            type: Date,
+            required: true
+          },
+          endDate: {
+            type: Date,
+            required: true
+          },
+          tag: {
+            type: [String],
+            required: true
+          },
+          calendarName: {
+            type: String,
+            required: true
+          },
+          scdContent: {
+            type: String,
+            required: true
+          },
+          scdAlarm: {
+            type: Date,
+            required: true
+          },
+          color: {
+            type: String,
+            required: true
+          },
+          UUID: {
+            type: String,
+            required: true
+          }
+        }
       }
     }],
     required: true
