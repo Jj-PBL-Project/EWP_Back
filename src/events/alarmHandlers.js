@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 
 const alarmHandlers = async (socket, { type, data }) => {
     try {
-var deleteId;
+        var deleteId;
         switch (type) {
             case "getAllAlarm":
                 // for refresh alarm list
@@ -69,7 +69,7 @@ var deleteId;
                 await User.updateOne({ UUID: socket.user.UUID }, {
                     $pull: {
                         userAlarm: {
-                    'UUID': deleteId
+                            'UUID': deleteId
                         }
                     }
                 });
