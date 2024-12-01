@@ -54,7 +54,6 @@ const scheduleHandler = async (socket, { type, data }) => {
         };
 
         const user = await User.updateOne({ UUID: socket.user.UUID }, { $push: { userSchedule: newAlarm } });
-        user.save();
 
         socket.emit("newAlarmRes", {
           status: 200,
