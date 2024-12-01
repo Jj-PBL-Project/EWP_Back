@@ -3,6 +3,7 @@ const { v4 } = require("uuid");
 const User = require("../models/userModel");
 
 const scheduleHandler = async (socket, { type, data }) => {
+  var schedule;
   try {
     switch (type) {
       // 일정 생성 CREATE
@@ -19,27 +20,50 @@ const scheduleHandler = async (socket, { type, data }) => {
           scdAlarm,
         } = data;
 
-        var userUUIDList = [];
-
-        for (let i = 0; i < tag.length; i++) {
-          const { userUUID } = await User.findOne({ userName, userTag });
-          if (userUUID == socket.user.UUID || !userUUID) continue;
-          userUUIDList.push(userUUID);
-        };
-
-        const newSchedule = new Schedule({
+        var scheduleData = {
           scdTitle,
           scdLocation,
           startDate,
           endDate,
-          tag: [...userUUIDList, socket.user.UUID],
+          tag: [socket.user.UUID],
           calendarName,
           scdContent,
           scdAlarm,
           color,
           UUID: v4(),
-        });
+        }
+        const newSchedule = new Schedule(scheduleData);
+
         await newSchedule.save();
+
+        for (let i = 0; i < tag.length; i++) {
+          const [userName, userTag] = tag[i].split("#");
+
+          const user = await User.findOne({ userName, userTag });
+
+          if (user?.UUID == socket.user.UUID || !user?.UUID) continue;
+
+          const newAlarm = {
+            alarmType: "invite",
+            UUID: v4(),
+            createdAt: new Date(),
+            content: scdTitle,
+            schedule: scheduleData,
+          };
+
+          await User.updateOne({ UUID: user.UUID }, {
+            $push: {
+              userAlarm: newAlarm
+            }
+          });
+
+          global.io.to(user.UUID).emit("newAlarmRes", {
+            status: 200,
+            message: "일정에 초대되었습니다.",
+            data: newAlarm
+          });
+        };
+
         socket.emit("createScheduleRes", {
           status: 201,
           message: "일정 생성이 완료되었습니다.",
@@ -53,7 +77,7 @@ const scheduleHandler = async (socket, { type, data }) => {
           content: scdTitle
         };
 
-        const user = await User.updateOne({ UUID: socket.user.UUID }, { $push: { userSchedule: newAlarm } });
+        await User.updateOne({ UUID: socket.user.UUID }, { $push: { userAlarm: newAlarm } });
 
         socket.emit("newAlarmRes", {
           status: 200,
