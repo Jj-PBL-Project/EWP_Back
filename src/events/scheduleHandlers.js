@@ -1,5 +1,6 @@
 const Schedule = require("../models/scheduleModel");
 const { v4 } = require("uuid");
+const User = require("../models/userModel");
 
 const scheduleHandler = async (socket, { type, data }) => {
   try {
@@ -45,10 +46,20 @@ const scheduleHandler = async (socket, { type, data }) => {
           data: newSchedule,
         });
 
+        const newAlarm = {
+          alarmType: 'alarm',
+          UUID: v4(),
+          createdAt: new Date(),
+          content: scdTitle
+        };
+
+        const user = await User.updateOne({ UUID: socket.user.UUID }, { $push: { userSchedule: newAlarm } });
+        user.save();
+
         socket.emit("newAlarmRes", {
           status: 200,
           message: "새로운 일정이 생성되었습니다.",
-          data
+          data: newAlarm
         });
         break;
 
