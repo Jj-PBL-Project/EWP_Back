@@ -72,6 +72,10 @@ const userSchema = new mongoose.Schema({
       createdAt: {
         type: Date,
         required: true
+      },
+      content: {
+        type: String,
+        required: false
       }
     }],
     required: true
