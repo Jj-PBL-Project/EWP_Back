@@ -110,47 +110,6 @@ const scheduleHandler = async (socket, { type, data }) => {
           data: scheduleDatas,
         });
         break;
-
-      // 선택 일정 조회 READ
-      case "read":
-        var { UUID } = data;
-        const schedule = await Schedule.findOne({ UUID });
-        if (!schedule) {
-          socket.emit("readScheduleRes", {
-            status: 404,
-            message: "해당 일정을 찾을 수 없습니다.",
-          });
-        } else {
-          socket.emit("readScheduleRes", {
-            status: 200,
-            message: "일정 조회를 완료했습니다.",
-            data: schedule,
-          });
-        }
-        break;
-
-      // 일정 검색 SEARCH
-      case "search":
-        const { keyword } = data;
-        const searchSchedule = await Schedule.find({
-          tag: { $in: [socket.user.UUID] },
-          schTitle: { $regex: keyword, $options: "i" },
-        });
-
-        if (searchSchedule.length == 0) {
-          socket.emit("searchScheduleRes", {
-            status: 404,
-            message: "검색 결과가 없습니다..",
-          });
-        } else {
-          socket.emit("searchScheduleRes", {
-            status: 200,
-            message: "검색 결과를 찾았습니다.",
-            data: searchSchedule,
-          });
-        }
-        break;
-
       // 일정 수정 UPDATE
       case "update":
         var {
