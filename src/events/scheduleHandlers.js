@@ -84,6 +84,19 @@ const scheduleHandler = async (socket, { type, data }) => {
           message: "새로운 일정이 생성되었습니다.",
           data: newAlarm
         });
+
+        function timestampToCron(timestamp) {
+          const date = new Date(timestamp);
+          const hours = date.getHours();
+          const minutes = date.getMinutes();
+          return `${minutes} ${hours} * * *`;
+        }
+
+        cron.schedule(timestampToCron(newSchedule.scdAlarm), async () => {
+          newSchedule.tag.forEach((tag) => {
+            io.to(tag).emit("newAlarmRes", newSchedule);
+          });
+        });
         break;
 
       // 일정 한달 조회 READ

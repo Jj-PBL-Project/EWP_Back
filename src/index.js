@@ -5,6 +5,8 @@ const httpServer = createServer(app);
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const { readdirSync } = require("fs");
+const Schedule = require("./models/scheduleModel");
+const cron = require("node-cron");
 const io = new Server(httpServer, {
     pingInterval: 5000,
     pingTimeout: 120000,
@@ -27,6 +29,23 @@ io.on("connection", async (socket) => {
         const event = require("./events/" + file);
         socket.on(file.replace(".js", ""), (data) => {
             event(socket, data);
+        });
+    });
+});
+
+const schedules = await Schedule.find({ startDate: { $gte: startDate } });
+
+function timestampToCron(timestamp) {
+    const date = new Date(timestamp);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return `${minutes} ${hours} * * *`;
+}
+
+schedules.forEach((schedule) => {
+    cron.schedule(timestampToCron(schedule.scdAlarm), async () => {
+        schedule.tag.forEach((tag) => {
+            io.to(tag).emit("newAlarmRes", schedule);
         });
     });
 });
